@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<GridLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:columnCount="11"
+    android:orientation="horizontal"
+    android:rowCount="5">
+
+    <Button
+        android:layout_width="30dp"
+        />
+    <Button
+        android:layout_width="30dp"
+        />
+    <Button
+        android:layout_width="30dp"
+        />
+    <Button
+        android:layout_width="30dp"
+        />
+    <Button
+        android:layout_width="30dp"
+        />
+
+</GridLayout>

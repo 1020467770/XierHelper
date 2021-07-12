@@ -1,0 +1,202 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <import
+            alias="courseViewModel"
+            type="cn.sqh.xierhelper.core.ui.viewModel.LoginUserViewModel" />
+
+        <variable
+            name="viewModel"
+            type="courseViewModel" />
+
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/loginbg"
+        android:orientation="vertical">
+
+        <include
+            android:id="@+id/include"
+            layout="@layout/layout_toolbar" />
+
+        <LinearLayout
+            android:id="@+id/LLO2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="#99404348"
+            android:gravity="center"
+            android:paddingTop="20dp"
+            android:paddingBottom="30dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/include"
+            app:layout_constraintVertical_bias="0.139"
+            tools:layout_editor_absoluteX="0dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:text="Welcome !"
+                android:textColor="#88FFFFFF"
+                android:textSize="22sp" />
+        </LinearLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/sr_name"
+
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="18dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="18dp"
+            app:boxBackgroundMode="filled"
+            app:boxCornerRadiusBottomEnd="20dp"
+            app:boxCornerRadiusBottomStart="20dp"
+            app:boxCornerRadiusTopEnd="20dp"
+            app:boxCornerRadiusTopStart="20dp"
+
+            app:boxStrokeWidth="0dp"
+            app:boxStrokeWidthFocused="0dp"
+            app:counterEnabled="true"
+            app:counterMaxLength="20"
+            app:counterOverflowTextAppearance="@style/MyOverflowText"
+            app:counterTextColor="@color/colorOriginal"
+            app:errorEnabled="true"
+            app:errorTextAppearance="@style/MyErrorText"
+
+
+            app:hintEnabled="true"
+            app:hintTextAppearance="@style/MyHintText"
+            app:layout_constraintEnd_toEndOf="parent"
+
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/LLO2"
+
+            >
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/et_username"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@null"
+                android:hint="用户名"
+
+                android:maxLines="1"
+                android:paddingStart="20dp"
+                android:text="@={viewModel.loginMuser}" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/sr_password"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="18dp"
+
+            android:layout_marginLeft="50dp"
+            android:layout_marginEnd="18dp"
+            android:layout_marginRight="50dp"
+            app:boxBackgroundMode="filled"
+            app:boxCornerRadiusBottomEnd="20dp"
+            app:boxCornerRadiusBottomStart="20dp"
+            app:boxCornerRadiusTopEnd="20dp"
+            app:boxCornerRadiusTopStart="20dp"
+            app:boxStrokeWidth="0dp"
+            app:boxStrokeWidthFocused="0dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+
+            app:layout_constraintTop_toBottomOf="@+id/sr_name"
+            app:passwordToggleEnabled="true">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/et_password"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@null"
+                android:hint="密码"
+
+                android:inputType="textPassword"
+                android:paddingStart="20dp"
+                android:text="@={viewModel.loginPaswd}" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/sr_verify"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="18dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginEnd="160dp"
+            android:orientation="horizontal"
+            app:boxBackgroundMode="filled"
+            app:boxCornerRadiusBottomEnd="20dp"
+            app:boxCornerRadiusBottomStart="20dp"
+            app:boxCornerRadiusTopEnd="20dp"
+            app:boxCornerRadiusTopStart="20dp"
+
+            app:boxStrokeWidth="0dp"
+            app:boxStrokeWidthFocused="0dp"
+            app:counterEnabled="true"
+            app:counterMaxLength="20"
+            app:counterOverflowTextAppearance="@style/MyOverflowText"
+            app:counterTextColor="@color/colorOriginal"
+            app:errorEnabled="true"
+            app:errorTextAppearance="@style/MyErrorText"
+
+
+            app:hintEnabled="true"
+            app:hintTextAppearance="@style/MyHintText"
+            app:layout_constraintEnd_toEndOf="parent"
+
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/sr_password"
+
+            >
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@null"
+                android:hint="请输入验证码"
+                android:maxLines="1"
+                android:paddingStart="20dp"
+                android:text="@={viewModel.loginVerifyCode}" />
+
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <ImageView
+            android:id="@+id/verify_img"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginBottom="8dp"
+            app:layout_constraintBottom_toBottomOf="@+id/sr_verify"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/sr_verify"
+            app:layout_constraintTop_toBottomOf="@+id/sr_password" />
+
+        <ImageButton
+            android:id="@+id/loginBtn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="150dp"
+            android:layout_marginTop="16dp"
+            android:background="#00ffffff"
+            android:onClick="@{()->viewModel.login()}"
+            android:src="@drawable/ic_loginbutton"
+            app:layout_constraintEnd_toEndOf="parent"
+
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/sr_verify" />
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

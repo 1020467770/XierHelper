@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:bind="http://schemas.android.com/tools"
+    xmlns:tools="http://schemas.android.com/tools"
+    >
+
+    <data>
+        <import
+            alias="courseViewModel"
+            type="cn.sqh.xierhelper.core.ui.viewModel.CourseViewModel" />
+
+        <variable
+            name="viewModel"
+            type="courseViewModel" />
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <include
+            android:id="@+id/include"
+            app:viewModel="@{viewModel}"
+            layout="@layout/layout_toolbar" />
+
+        <cn.sqh.xierhelper.core.ui.customView.MyDrawerLayout
+            android:id="@+id/drawer_layout"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/include">
+
+            <!--内容区-->
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <!--<include
+                    android:id="@+id/include"
+                    layout="@layout/layout_toolbar" />-->
+
+                <!--<FrameLayout
+                    xmlns:android="http://schemas.android.com/apk/res/android"
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:id="@+id/fragment_container"
+                    app:layout_constraintBottom_toTopOf="@id/bottom_navigation_view"
+                    app:layout_constraintLeft_toLeftOf="parent"
+                    app:layout_constraintRight_toRightOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    >
+                </FrameLayout>-->
+
+                <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+                    android:id="@+id/swipeRefreshLayout"
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    app:layout_constraintBottom_toTopOf="@id/bottom_navigation_view"
+                    app:layout_constraintLeft_toLeftOf="parent"
+                    app:layout_constraintRight_toRightOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    >
+
+                    <androidx.viewpager2.widget.ViewPager2
+                        android:id="@+id/view_pager"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent" />
+
+                </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+
+                <!--内容区底栏-->
+                <com.google.android.material.bottomnavigation.BottomNavigationView
+                    android:id="@+id/bottom_navigation_view"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:background="?android:attr/windowBackground"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintLeft_toLeftOf="parent"
+                    app:layout_constraintRight_toRightOf="parent"
+                    app:menu="@menu/menu_bottom_navigation" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <!--左抽屉-->
+            <com.google.android.material.navigation.NavigationView
+                android:id="@+id/navigation_view"
+                android:layout_width="220dp"
+                android:layout_height="match_parent"
+                android:layout_gravity="start"
+                app:headerLayout="@layout/drawer_header"
+                app:menu="@menu/menu_left_drawer" />
+
+            <!--右抽屉-->
+            <include layout="@layout/layout_drawer_right_panel" />
+
+        </cn.sqh.xierhelper.core.ui.customView.MyDrawerLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</layout>

@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:showIn="navigation_view">
+
+    <group android:checkableBehavior="single">
+        <item
+
+            android:icon="@drawable/ic_guanggao"
+            android:title="广告位1"/>
+        <item
+
+            android:icon="@drawable/ic_guanggao"
+            android:title="广告位2"/>
+        <item
+
+            android:icon="@drawable/ic_guanggao"
+            android:title="广告位3"/>
+        <item
+
+            android:icon="@drawable/ic_guanggao"
+            android:title="广告位4"/>
+    </group>
+
+    <item android:title="用户功能">
+        <menu>
+            <item
+                android:id="@+id/nav_share"
+                android:icon="@drawable/ic_share"
+                android:title="分享"/>
+            <item
+                android:id="@+id/nav_exitLogin"
+                android:icon="@drawable/ic_exit"
+                android:title="退出登录"/>
+        </menu>
+    </item>
+
+</menu>

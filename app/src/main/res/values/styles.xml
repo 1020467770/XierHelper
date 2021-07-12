@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!--工具栏样式-->
+    <style name="Toolbar" parent="AppTheme">
+        <item name="titleTextColor">@color/white</item>
+        <item name="colorControlNormal">@color/white</item>
+    </style>
+
+    <style name="MyErrorText" parent="TextAppearance.AppCompat.Small">
+        <item name="android:textColor">@color/red</item>
+    </style>
+
+    <style name="MyOverflowText" parent="TextAppearance.AppCompat.Small">
+        <item name="android:textColor">@color/orange</item>
+    </style>
+
+    <style name="MyHintText" parent="TextAppearance.AppCompat.Small">
+        <item name="android:textColor">@color/colorOriginal</item>
+    </style>
+
+</resources>

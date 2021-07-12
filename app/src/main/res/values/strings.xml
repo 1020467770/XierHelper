@@ -1,0 +1,18 @@
+<resources>
+    <string name="app_name">福大助手</string>
+    <string name="login_title">登录界面</string>
+    <string name="bottom_view_course">课程</string>
+    <string name="bottom_view_tools">工具箱</string>
+    <string name="bottom_view_user_info">我的</string>
+
+    <string name="open">打开</string>
+    <string name="close">关闭</string>
+
+    <string name="settings">设置</string>
+
+
+    <string name="start_now">启动助手</string>
+    <string name="setting_isSmoothChangingPage">是否顺滑切换课程表</string>
+    <string name="setting_isScaleChangingPage">切换课程表是否缩小</string>
+
+</resources>
