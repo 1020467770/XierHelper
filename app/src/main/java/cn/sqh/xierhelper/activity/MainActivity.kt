@@ -18,6 +18,7 @@ import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.core.view.GravityCompat
+import androidx.core.view.isVisible
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.fragment.app.Fragment
 import androidx.viewpager2.adapter.FragmentStateAdapter
@@ -25,6 +26,8 @@ import androidx.viewpager2.widget.ViewPager2
 import cn.sqh.xierhelper.R
 import cn.sqh.xierhelper.core.ToolbarActivity
 import cn.sqh.xierhelper.core.ui.fragment.CourseFragment
+import cn.sqh.xierhelper.core.ui.fragment.CourseListFragment
+import cn.sqh.xierhelper.core.ui.fragment.ToolsFragment
 import cn.sqh.xierhelper.core.ui.viewModel.CourseViewModel
 import cn.sqh.xierhelper.databinding.ActivityMainBinding
 import cn.sqh.xierhelper.logic.model.StuCourseInfo
@@ -40,7 +43,8 @@ import java.util.*
 
 private const val TAG = "MainActivity"
 
-class MainActivity : ToolbarActivity(), NavigationView.OnNavigationItemSelectedListener {
+class MainActivity : ToolbarActivity(), NavigationView.OnNavigationItemSelectedListener,
+    CourseListFragment.PageChangedCallbacks {
 
     override val mViewModel: CourseViewModel by viewModels()
 
@@ -48,7 +52,9 @@ class MainActivity : ToolbarActivity(), NavigationView.OnNavigationItemSelectedL
 
     lateinit var drawerToggle: ActionBarDrawerToggle
 
-    lateinit var viewPager: ViewPager2
+    var weekSelector: TextView? = null
+
+    var pvOptions: OptionsPickerView<String?>? = null
 
     override fun initView() {
         setSupportActionBar(mToolbar)//必须先写
@@ -59,100 +65,10 @@ class MainActivity : ToolbarActivity(), NavigationView.OnNavigationItemSelectedL
         mDataBinding.bottomNavigationView.selectedItemId =
             R.id.bottom_navigation_item_course//设置默认选择页为课程页
         // TODO: 2021/5/25 这里之后应该是从api校历中获取的周数然后给下面的getItemCount.size
-        initWeekSelector()
         initLeftDrawer()
-        initRefreshView()
-        initViewPager()
-    }
-
-    //初始化ViewPager
-    private fun initViewPager() {
-        viewPager = mDataBinding.viewPager
-        viewPager.offscreenPageLimit = 1
-        viewPager.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
-            override fun onPageSelected(position: Int) {
-                mDataBinding.include.weekSelector.text = "第${position + 1}周"
-            }
-        })
-        refreshCourseTables()
-    }
-
-    var pvOptions: OptionsPickerView<String?>? = null
-
-    //初始化周数选择器
-    private fun initWeekSelector() {
-        val weekSelector = findViewById<TextView>(R.id.week_selector)
-        weekSelector.setOnClickListener {
-            pvOptions?.show()
-        }
-        val optionsItems = ArrayList<String>()
-        for (weekIndex in 1..21) {
-            optionsItems.add("第${weekIndex}周")
-        }
-        pvOptions = OptionsPickerBuilder(this, object : OnOptionsSelectListener {
-            override fun onOptionsSelect(options1: Int, options2: Int, options3: Int, v: View?) {
-//                mDataBinding.viewPager.setCurrentItem(options1, smoothScroll)
-                mDataBinding.viewPager.setCurrentItem(options1)
-            }
-        })
-            .setLayoutRes(R.layout.layout_bottom_week_selector, object : CustomListener {
-                override fun customLayout(v: View?) {
-                    v?.let {
-                        val tvSubmit = v.findViewById<TextView>(R.id.tv_finish)
-                        val ivCancel = v.findViewById<ImageView>(R.id.iv_cancel)
-                        tvSubmit?.setOnClickListener {
-                            pvOptions?.returnData()
-                            pvOptions?.dismiss()
-                        }
-                        ivCancel.setOnClickListener {
-                            pvOptions?.dismiss()
-                        }
-                    }
-                }
-            })
-            .setTitleText("周数选择")
-            .setContentTextSize(20)//设置滚轮文字大小
-            .setDividerColor(Color.LTGRAY)//设置分割线的颜色
-            .isRestoreItem(false)//切换时是否还原，设置默认选中第一项。
-            .build<String>()
-        pvOptions?.setPicker(optionsItems as List<String?>?)
-    }
-
-    //初始化下拉刷新视图
-    private fun initRefreshView() {
-        mDataBinding.swipeRefreshLayout?.apply {
-            setColorSchemeResources(
-                android.R.color.holo_blue_bright,
-                android.R.color.holo_green_light,
-                android.R.color.holo_orange_light
-            )
-            LogUtils.d(mViewModel.getCurrentTerm())
-            mViewModel.getCoursesByTerm()
-            setOnRefreshListener {
-                mViewModel.courseLiveData.observe(this@MainActivity) { result ->
-                    LogUtils.d("进入观察了")
-                    val courseInfo = result.getOrNull()
-                    if (courseInfo != null) {
-                        LogUtils.d("返回的课程是$courseInfo")
-                    }
-                    refreshCourseTables()
-                    this.isRefreshing = false
-                }
-            }
-        }
-    }
-
-    private fun refreshCourseTables() {
-        mDataBinding.viewPager.adapter =
-            object : FragmentStateAdapter(this) {
-                override fun getItemCount(): Int {
-                    return 22
-                }
-
-                override fun createFragment(position: Int): Fragment {
-                    return CourseFragment.create(position)
-                }
-            }
+        initWeekSelector()
+        /*initRefreshView()
+        initViewPager()*/
     }
 
     //初始化左抽屉
@@ -235,22 +151,6 @@ class MainActivity : ToolbarActivity(), NavigationView.OnNavigationItemSelectedL
         }*/
     }
 
-    //底栏内容点击事件
-    private val mOnNavigationItemSelectedListener =
-        BottomNavigationView.OnNavigationItemSelectedListener { item ->
-            when (item.itemId) {
-                R.id.bottom_navigation_item_course -> {
-                    // TODO: 2021/5/1 显示课程表fragment
-                    return@OnNavigationItemSelectedListener true
-                }
-                R.id.bottom_navigation_item_tools -> {
-                    // TODO: 2021/5/1 显示工具箱fragment
-                    return@OnNavigationItemSelectedListener true
-                }
-            }
-            false
-        }
-
     //左抽屉内容点击事件
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
         val title = item.title as String
@@ -296,6 +196,78 @@ class MainActivity : ToolbarActivity(), NavigationView.OnNavigationItemSelectedL
         return super.onOptionsItemSelected(item)
     }
 
+    //初始化周数选择器
+    private fun initWeekSelector() {
+        weekSelector = findViewById<TextView>(R.id.week_selector)
+        weekSelector?.setOnClickListener {
+            pvOptions?.show()
+        }
+        val optionsItems = ArrayList<String>()
+        for (weekIndex in 1..21) {
+            optionsItems.add("第${weekIndex}周")
+        }
+        pvOptions = OptionsPickerBuilder(this, object : OnOptionsSelectListener {
+            override fun onOptionsSelect(options1: Int, options2: Int, options3: Int, v: View?) {
+//                mDataBinding.viewPager.setCurrentItem(options1, smoothScroll)
+                supportFragmentManager.findFragmentById(R.id.fragment_container)?.view?.findViewById<ViewPager2>(
+                    R.id.view_pager
+                )?.setCurrentItem(options1)
+            }
+        })
+            .setLayoutRes(R.layout.layout_bottom_week_selector, object : CustomListener {
+                override fun customLayout(v: View?) {
+                    v?.let {
+                        val tvSubmit = v.findViewById<TextView>(R.id.tv_finish)
+                        val ivCancel = v.findViewById<ImageView>(R.id.iv_cancel)
+                        tvSubmit?.setOnClickListener {
+                            pvOptions?.returnData()
+                            pvOptions?.dismiss()
+                        }
+                        ivCancel.setOnClickListener {
+                            pvOptions?.dismiss()
+                        }
+                    }
+                }
+            })
+            .setTitleText("周数选择")
+            .setContentTextSize(20)//设置滚轮文字大小
+            .setDividerColor(Color.LTGRAY)//设置分割线的颜色
+            .isRestoreItem(false)//切换时是否还原，设置默认选中第一项。
+            .build<String>()
+        pvOptions?.setPicker(optionsItems as List<String?>?)
+    }
+
+    //底栏内容点击事件
+    private val mOnNavigationItemSelectedListener =
+        BottomNavigationView.OnNavigationItemSelectedListener { item ->
+            val currentFragment = supportFragmentManager.findFragmentById(R.id.fragment_container)
+            if (currentFragment == null)
+                false
+            when (item.itemId) {
+                R.id.bottom_navigation_item_course -> {
+                    // TODO: 2021/5/1 显示课程表fragment
+                    val fragment = CourseListFragment.newInstance()
+                    weekSelector?.isVisible = true
+                    supportFragmentManager
+                        .beginTransaction()
+                        .replace(R.id.fragment_container, fragment)
+                        .commit()
+                    return@OnNavigationItemSelectedListener true
+                }
+                R.id.bottom_navigation_item_tools -> {
+                    // TODO: 2021/5/1 显示工具箱fragment
+                    val fragment = ToolsFragment.newInstance()
+                    weekSelector?.isVisible = false
+                    supportFragmentManager
+                        .beginTransaction()
+                        .replace(R.id.fragment_container, fragment)
+                        .commit()
+                    return@OnNavigationItemSelectedListener true
+                }
+            }
+            false
+        }
+
     override fun setToolbar() {
         mToolbar.setTitle(getString(R.string.login_title))
     }
@@ -310,5 +282,8 @@ class MainActivity : ToolbarActivity(), NavigationView.OnNavigationItemSelectedL
         }
     }
 
+    override fun onPageChanged(pageIndex: Int) {
+        mDataBinding.include.weekSelector.text = "第${pageIndex + 1}周"
+    }
 
 }

@@ -36,6 +36,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="50dp"
                 android:gravity="center"
+                android:text="第1周"
                 tools:text="第1周" />
 
         </androidx.appcompat.widget.Toolbar>

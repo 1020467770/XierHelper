@@ -43,8 +43,7 @@
                     android:id="@+id/include"
                     layout="@layout/layout_toolbar" />-->
 
-                <!--<FrameLayout
-                    xmlns:android="http://schemas.android.com/apk/res/android"
+                <FrameLayout
                     android:layout_width="0dp"
                     android:layout_height="0dp"
                     android:id="@+id/fragment_container"
@@ -53,9 +52,9 @@
                     app:layout_constraintRight_toRightOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
                     >
-                </FrameLayout>-->
+                </FrameLayout>
 
-                <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+                <!--<androidx.swiperefreshlayout.widget.SwipeRefreshLayout
                     android:id="@+id/swipeRefreshLayout"
                     android:layout_width="0dp"
                     android:layout_height="0dp"
@@ -70,7 +69,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="match_parent" />
 
-                </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+                </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>-->
 
                 <!--内容区底栏-->
                 <com.google.android.material.bottomnavigation.BottomNavigationView
