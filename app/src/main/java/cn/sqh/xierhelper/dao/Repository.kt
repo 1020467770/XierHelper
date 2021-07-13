@@ -2,14 +2,11 @@ package cn.sqh.xierhelper.dao
 
 import android.annotation.SuppressLint
 import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.liveData
 import cn.sqh.xierhelper.dao.database.CourseDatabase
+import cn.sqh.xierhelper.dao.sharedPreference.SettingDao
 import cn.sqh.xierhelper.dao.sharedPreference.UserDao
-import cn.sqh.xierhelper.logic.model.Course
-import cn.sqh.xierhelper.logic.model.CourseTableItem
-import cn.sqh.xierhelper.logic.model.StuCourseInfo
-import cn.sqh.xierhelper.logic.model.User
+import cn.sqh.xierhelper.logic.model.*
 import cn.sqh.xierhelper.logic.network.XierHelperNetwork
 import com.blankj.utilcode.util.ColorUtils
 import com.blankj.utilcode.util.LogUtils
@@ -60,6 +57,8 @@ object Repository {
 
     //左边侧栏每一格的高度
     var leftTvMeasuredHeight: Int? = null
+
+    var currentSetting: Setting? = null
 
     /////////////////////////////////////
     //网络请求的方法
@@ -467,6 +466,22 @@ object Repository {
 
     ////////////////////////////////
     //sharedPreference操作
+
+    //从内存、文件中获取设置值
+    fun getSettings(): Setting {
+        if (currentSetting != null) {
+            return currentSetting!!
+        } else if (SettingDao.isSettingSaved()) {
+            return SettingDao.getSetting().apply { currentSetting = this }
+        } else {
+            return Setting()
+        }
+    }
+
+    fun saveSettings(setting: Setting) {
+        currentSetting = setting
+        SettingDao.saveSetting(setting)
+    }
 
     fun getUserFromFile() = UserDao.getSavedUser()?.apply { mLoginId = this.loginId }
 

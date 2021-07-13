@@ -1,6 +1,6 @@
 package cn.sqh.xierhelper.logic.model
 
-class Tool(
+data class Tool(
     var name: String = "",
     var imgId: Int = 0
 ) {

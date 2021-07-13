@@ -6,6 +6,7 @@ import androidx.lifecycle.Transformations
 import androidx.lifecycle.ViewModel
 import cn.sqh.xierhelper.dao.Repository
 import cn.sqh.xierhelper.logic.model.CourseTableItem
+import cn.sqh.xierhelper.logic.model.Setting
 import cn.sqh.xierhelper.logic.model.StuCourseInfo
 import cn.sqh.xierhelper.logic.network.OkHttpManager
 import com.blankj.utilcode.util.LogUtils
@@ -86,5 +87,8 @@ class CourseViewModel : ViewModel() {
         Repository.getCurrentTermFromFile()
     }
 
+    fun getSettings() = Repository.getSettings()
+
+    fun saveSettings(setting: Setting) = Repository.saveSettings(setting)
 
 }

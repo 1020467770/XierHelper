@@ -17,6 +17,7 @@ import cn.sqh.xierhelper.R
 import cn.sqh.xierhelper.core.BaseFragment
 import cn.sqh.xierhelper.core.ui.viewModel.CourseViewModel
 import cn.sqh.xierhelper.databinding.FragmentCoursesBinding
+import cn.sqh.xierhelper.logic.model.Setting
 import com.bigkoo.pickerview.builder.OptionsPickerBuilder
 import com.bigkoo.pickerview.listener.CustomListener
 import com.bigkoo.pickerview.listener.OnOptionsSelectListener
@@ -34,6 +35,21 @@ class CourseListFragment : BaseFragment() {
 
     private var pageChangeCallbacks: PageChangedCallbacks? = null
 
+    //切换的动画
+    private val mAnimator = ViewPager2.PageTransformer { page, position ->
+        val absPos = Math.abs(position)
+        page.apply {
+            if (mViewModel.getSettings().datas[Setting.SETTING_TYPE_IS_CHANGE_PAGE_SCALE] as Boolean) {
+                val scale = if (absPos > 1) 0F else 1 - absPos
+                scaleX = scale
+                scaleY = scale
+            } else {
+                scaleX = 1f
+                scaleY = 1f
+            }
+        }
+    }
+
     override fun initView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -47,6 +63,7 @@ class CourseListFragment : BaseFragment() {
     private fun initViewPager() {
         viewPager = mDataBinding.viewPager
         viewPager.offscreenPageLimit = 1
+        viewPager.setPageTransformer(mAnimator)
         viewPager.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
             override fun onPageSelected(position: Int) {
                 pageChangeCallbacks?.onPageChanged(position)

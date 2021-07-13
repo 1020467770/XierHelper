@@ -21,7 +21,7 @@
         android:layout_height="match_parent">
 
         <include
-            android:id="@+id/include"
+            android:id="@+id/header"
             app:viewModel="@{viewModel}"
             layout="@layout/layout_toolbar" />
 
@@ -32,7 +32,7 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/include">
+            app:layout_constraintTop_toBottomOf="@id/header">
 
             <!--内容区-->
             <androidx.constraintlayout.widget.ConstraintLayout
@@ -94,7 +94,10 @@
                 app:menu="@menu/menu_left_drawer" />
 
             <!--右抽屉-->
-            <include layout="@layout/layout_drawer_right_panel" />
+            <include
+                android:id="@+id/right_drawer"
+                layout="@layout/layout_drawer_right_panel"
+                />
 
         </cn.sqh.xierhelper.core.ui.customView.MyDrawerLayout>
     </androidx.constraintlayout.widget.ConstraintLayout>

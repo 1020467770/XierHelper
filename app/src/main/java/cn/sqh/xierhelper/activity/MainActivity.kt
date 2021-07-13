@@ -4,6 +4,7 @@ package cn.sqh.xierhelper.activity
 //import kotlinx.android.synthetic.main.activity_main_test.*
 //import kotlinx.android.synthetic.main.activity_main.*
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.graphics.Color
@@ -12,30 +13,26 @@ import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.view.inputmethod.InputMethodManager
-import android.widget.ImageView
-import android.widget.TextView
-import android.widget.Toast
+import android.widget.*
 import androidx.activity.viewModels
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.core.view.GravityCompat
 import androidx.core.view.isVisible
 import androidx.drawerlayout.widget.DrawerLayout
-import androidx.fragment.app.Fragment
-import androidx.viewpager2.adapter.FragmentStateAdapter
 import androidx.viewpager2.widget.ViewPager2
 import cn.sqh.xierhelper.R
 import cn.sqh.xierhelper.core.ToolbarActivity
-import cn.sqh.xierhelper.core.ui.fragment.CourseFragment
 import cn.sqh.xierhelper.core.ui.fragment.CourseListFragment
 import cn.sqh.xierhelper.core.ui.fragment.ToolsFragment
 import cn.sqh.xierhelper.core.ui.viewModel.CourseViewModel
 import cn.sqh.xierhelper.databinding.ActivityMainBinding
+import cn.sqh.xierhelper.logic.model.Setting
 import cn.sqh.xierhelper.logic.model.StuCourseInfo
 import com.bigkoo.pickerview.builder.OptionsPickerBuilder
 import com.bigkoo.pickerview.listener.CustomListener
 import com.bigkoo.pickerview.listener.OnOptionsSelectListener
 import com.bigkoo.pickerview.view.OptionsPickerView
-import com.blankj.utilcode.util.LogUtils
+import com.blankj.utilcode.util.ToastUtils
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.navigation.NavigationView
 import java.util.*
@@ -44,7 +41,7 @@ import java.util.*
 private const val TAG = "MainActivity"
 
 class MainActivity : ToolbarActivity(), NavigationView.OnNavigationItemSelectedListener,
-    CourseListFragment.PageChangedCallbacks {
+    CourseListFragment.PageChangedCallbacks, CompoundButton.OnCheckedChangeListener {
 
     override val mViewModel: CourseViewModel by viewModels()
 
@@ -56,6 +53,12 @@ class MainActivity : ToolbarActivity(), NavigationView.OnNavigationItemSelectedL
 
     var pvOptions: OptionsPickerView<String?>? = null
 
+    private val changeSmoothSwitch by lazy { mDataBinding.rightDrawer!!.isChangeSmoothSwitch }
+
+    private val changeScaleSwitch by lazy { mDataBinding.rightDrawer!!.isChangeScaleSwitch }
+
+    private val settings by lazy { mViewModel.getSettings() }
+
     override fun initView() {
         setSupportActionBar(mToolbar)//必须先写
         mDataBinding.viewModel = mViewModel
@@ -66,9 +69,15 @@ class MainActivity : ToolbarActivity(), NavigationView.OnNavigationItemSelectedL
             R.id.bottom_navigation_item_course//设置默认选择页为课程页
         // TODO: 2021/5/25 这里之后应该是从api校历中获取的周数然后给下面的getItemCount.size
         initLeftDrawer()
+        initRightDrawer()
         initWeekSelector()
         /*initRefreshView()
         initViewPager()*/
+    }
+
+    private fun initRightDrawer() {
+        changeSmoothSwitch.setOnCheckedChangeListener(this)
+        changeScaleSwitch.setOnCheckedChangeListener(this)
     }
 
     //初始化左抽屉
@@ -99,13 +108,15 @@ class MainActivity : ToolbarActivity(), NavigationView.OnNavigationItemSelectedL
                 }
 
                 override fun onDrawerClosed(drawerView: View) {
-                    val navigationView = mDataBinding.navigationView
-                    if (drawerView != navigationView) {
+                    val leftDrawer = mDataBinding.navigationView
+                    //右边的drawer关闭时的处理，因为右抽屉是引入的，不能用==比较，所以这里用!=左抽屉
+                    if (drawerView != leftDrawer) {
 //                        drawerToggle.isDrawerIndicatorEnabled = true
                         drawerLayout.setDrawerLockMode(
                             DrawerLayout.LOCK_MODE_UNLOCKED,
-                            navigationView!!
+                            leftDrawer!!
                         )
+                        saveSetting()
                     }
                     Log.d(TAG, "关闭")
                 }
@@ -190,10 +201,28 @@ class MainActivity : ToolbarActivity(), NavigationView.OnNavigationItemSelectedL
                     drawerToggle.setToolbarNavigationClickListener {
                         drawerLayout?.closeDrawer(GravityCompat.END)
                     }
+                    updateRightDrawerUI()
                 }
             }
         }
         return super.onOptionsItemSelected(item)
+    }
+
+    private fun saveSetting() {
+        settings.datas[Setting.SETTING_TYPE_IS_CHANGE_PAGE_SMOOTH] = changeSmoothSwitch.isChecked
+        settings.datas[Setting.SETTING_TYPE_IS_CHANGE_PAGE_SCALE] = changeScaleSwitch.isChecked
+        mViewModel.saveSettings(settings)
+    }
+
+    private fun updateRightDrawerUI() {
+        val isChangeSmooth = settings.datas[Setting.SETTING_TYPE_IS_CHANGE_PAGE_SMOOTH]
+        val isChangeScale = settings.datas[Setting.SETTING_TYPE_IS_CHANGE_PAGE_SCALE]
+        if (isChangeSmooth is Boolean) {
+            changeSmoothSwitch.isChecked = isChangeSmooth as Boolean
+        }
+        if (isChangeScale is Boolean) {
+            changeScaleSwitch.isChecked = isChangeScale as Boolean
+        }
     }
 
     //初始化周数选择器
@@ -211,7 +240,10 @@ class MainActivity : ToolbarActivity(), NavigationView.OnNavigationItemSelectedL
 //                mDataBinding.viewPager.setCurrentItem(options1, smoothScroll)
                 supportFragmentManager.findFragmentById(R.id.fragment_container)?.view?.findViewById<ViewPager2>(
                     R.id.view_pager
-                )?.setCurrentItem(options1)
+                )?.setCurrentItem(
+                    options1,
+                    settings.datas[Setting.SETTING_TYPE_IS_CHANGE_PAGE_SMOOTH] as Boolean
+                )
             }
         })
             .setLayoutRes(R.layout.layout_bottom_week_selector, object : CustomListener {
@@ -282,8 +314,21 @@ class MainActivity : ToolbarActivity(), NavigationView.OnNavigationItemSelectedL
         }
     }
 
+    @SuppressLint("SetTextI18n")
     override fun onPageChanged(pageIndex: Int) {
-        mDataBinding.include.weekSelector.text = "第${pageIndex + 1}周"
+        mDataBinding.header.weekSelector.text = "第${pageIndex + 1}周"
     }
 
+    override fun onCheckedChanged(buttonView: CompoundButton?, isChecked: Boolean) {
+        buttonView?.let { switch ->
+            when (switch.id) {
+                R.id.isChangeSmoothSwitch -> {
+//                    ToastUtils.showShort("点击了顺滑切换")
+                }
+                R.id.isChangeScaleSwitch -> {
+//                    ToastUtils.showShort("点击了放大切换")
+                }
+            }
+        }
+    }
 }
