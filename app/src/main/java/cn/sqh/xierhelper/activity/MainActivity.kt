@@ -301,7 +301,7 @@ class MainActivity : ToolbarActivity(), NavigationView.OnNavigationItemSelectedL
         }
 
     override fun setToolbar() {
-        mToolbar.setTitle(getString(R.string.login_title))
+        mToolbar.setTitle(getString(R.string.app_name))
     }
 
     override fun getLayoutId(): Int {
